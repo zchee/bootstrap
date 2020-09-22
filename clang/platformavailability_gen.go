@@ -6,19 +6,14 @@ import "C"
 
 // Describes the availability of a given entity on a particular platform, e.g., a particular class might only be available on Mac OS 10.7 or newer.
 type PlatformAvailability struct {
-	c *C.CXPlatformAvailability
-}
-
-// Free the memory associated with a CXPlatformAvailability structure.
-func (pa PlatformAvailability) Dispose() {
-	C.clang_disposeCXPlatformAvailability(pa.c)
+	c C.CXPlatformAvailability
 }
 
 /*
 	A string that describes the platform for which this structure
 	provides availability information.
 
-	Possible values are "ios" or "macosx".
+	Possible values are "ios" or "macos".
 */
 func (pa PlatformAvailability) Platform() string {
 	o := cxstring{pa.c.Platform}

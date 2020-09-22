@@ -9,73 +9,7 @@ import (
 )
 
 type IdxDeclInfo struct {
-	c *C.CXIdxDeclInfo
-}
-
-func (idi *IdxDeclInfo) ContainerDeclInfo() *IdxObjCContainerDeclInfo {
-	o := C.clang_index_getObjCContainerDeclInfo(idi.c)
-
-	var gop_o *IdxObjCContainerDeclInfo
-	if o != nil {
-		gop_o = &IdxObjCContainerDeclInfo{*o}
-	}
-
-	return gop_o
-}
-
-func (idi *IdxDeclInfo) InterfaceDeclInfo() *IdxObjCInterfaceDeclInfo {
-	o := C.clang_index_getObjCInterfaceDeclInfo(idi.c)
-
-	var gop_o *IdxObjCInterfaceDeclInfo
-	if o != nil {
-		gop_o = &IdxObjCInterfaceDeclInfo{*o}
-	}
-
-	return gop_o
-}
-
-func (idi *IdxDeclInfo) CategoryDeclInfo() *IdxObjCCategoryDeclInfo {
-	o := C.clang_index_getObjCCategoryDeclInfo(idi.c)
-
-	var gop_o *IdxObjCCategoryDeclInfo
-	if o != nil {
-		gop_o = &IdxObjCCategoryDeclInfo{*o}
-	}
-
-	return gop_o
-}
-
-func (idi *IdxDeclInfo) ProtocolRefListInfo() *IdxObjCProtocolRefListInfo {
-	o := C.clang_index_getObjCProtocolRefListInfo(idi.c)
-
-	var gop_o *IdxObjCProtocolRefListInfo
-	if o != nil {
-		gop_o = &IdxObjCProtocolRefListInfo{*o}
-	}
-
-	return gop_o
-}
-
-func (idi *IdxDeclInfo) PropertyDeclInfo() *IdxObjCPropertyDeclInfo {
-	o := C.clang_index_getObjCPropertyDeclInfo(idi.c)
-
-	var gop_o *IdxObjCPropertyDeclInfo
-	if o != nil {
-		gop_o = &IdxObjCPropertyDeclInfo{*o}
-	}
-
-	return gop_o
-}
-
-func (idi *IdxDeclInfo) ClassDeclInfo() *IdxCXXClassDeclInfo {
-	o := C.clang_index_getCXXClassDeclInfo(idi.c)
-
-	var gop_o *IdxCXXClassDeclInfo
-	if o != nil {
-		gop_o = &IdxCXXClassDeclInfo{*o}
-	}
-
-	return gop_o
+	c C.CXIdxDeclInfo
 }
 
 func (idi IdxDeclInfo) EntityInfo() *IdxEntityInfo {
@@ -149,7 +83,7 @@ func (idi IdxDeclInfo) DeclAsContainer() *IdxContainerInfo {
 	return gop_o
 }
 
-// Whether the declaration exists in code or was created implicitly by the compiler, e.g. implicit objc methods for properties.
+// Whether the declaration exists in code or was created implicitly by the compiler, e.g. implicit Objective-C methods for properties.
 func (idi IdxDeclInfo) IsImplicit() bool {
 	o := idi.c.isImplicit
 

@@ -5,18 +5,7 @@ package clang
 import "C"
 
 type IdxAttrInfo struct {
-	c *C.CXIdxAttrInfo
-}
-
-func (iai *IdxAttrInfo) IBOutletCollectionAttrInfo() *IdxIBOutletCollectionAttrInfo {
-	o := C.clang_index_getIBOutletCollectionAttrInfo(iai.c)
-
-	var gop_o *IdxIBOutletCollectionAttrInfo
-	if o != nil {
-		gop_o = &IdxIBOutletCollectionAttrInfo{*o}
-	}
-
-	return gop_o
+	c C.CXIdxAttrInfo
 }
 
 func (iai IdxAttrInfo) Kind() IdxAttrKind {

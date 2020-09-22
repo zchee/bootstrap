@@ -13,10 +13,6 @@ type TUResourceUsage struct {
 	c C.CXTUResourceUsage
 }
 
-func (turu TUResourceUsage) Dispose() {
-	C.clang_disposeCXTUResourceUsage(turu.c)
-}
-
 func (turu TUResourceUsage) NumEntries() uint32 {
 	return uint32(turu.c.numEntries)
 }

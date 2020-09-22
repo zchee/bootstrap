@@ -4,6 +4,7 @@ package clang
 // #include "go-clang.h"
 import "C"
 
-type Module struct {
-	c C.CXModule
+// Evaluation result of a cursor
+type EvalResult struct {
+	c C.CXEvalResult
 }

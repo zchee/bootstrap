@@ -37,12 +37,6 @@ const (
 	IdxEntity_CXXInterface                        = C.CXIdxEntity_CXXInterface
 )
 
-func (iek IdxEntityKind) IsEntityObjCContainerKind() bool {
-	o := C.clang_index_isEntityObjCContainerKind(C.CXIdxEntityKind(iek))
-
-	return o != C.int(0)
-}
-
 func (iek IdxEntityKind) Spelling() string {
 	switch iek {
 	case IdxEntity_Unexposed:

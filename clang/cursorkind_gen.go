@@ -3,6 +3,7 @@ package clang
 // #include "./clang-c/Index.h"
 // #include "go-clang.h"
 import "C"
+import "fmt"
 
 // Describes the kind of entity that a cursor refers to.
 type CursorKind uint32
@@ -54,7 +55,7 @@ const (
 	Cursor_ObjCImplementationDecl = C.CXCursor_ObjCImplementationDecl
 	// An Objective-C \@implementation for a category.
 	Cursor_ObjCCategoryImplDecl = C.CXCursor_ObjCCategoryImplDecl
-	// A typedef
+	// A typedef.
 	Cursor_TypedefDecl = C.CXCursor_TypedefDecl
 	// A C++ class method.
 	Cursor_CXXMethod = C.CXCursor_CXXMethod
@@ -225,7 +226,7 @@ const (
 		expression is not reported.
 	*/
 	Cursor_UnexposedExpr = C.CXCursor_UnexposedExpr
-	// An expression that refers to some value declaration, such as a function, varible, or enumerator.
+	// An expression that refers to some value declaration, such as a function, variable, or enumerator.
 	Cursor_DeclRefExpr = C.CXCursor_DeclRefExpr
 	// An expression that refers to a member of a struct, union, class, Objective-C class, etc.
 	Cursor_MemberRefExpr = C.CXCursor_MemberRefExpr
@@ -325,7 +326,7 @@ const (
 	Cursor_CXXNewExpr = C.CXCursor_CXXNewExpr
 	// A delete expression for memory deallocation and destructor calls, e.g. "delete[] pArray".
 	Cursor_CXXDeleteExpr = C.CXCursor_CXXDeleteExpr
-	// A unary expression.
+	// A unary expression. (noexcept, sizeof, or other traits)
 	Cursor_UnaryExpr = C.CXCursor_UnaryExpr
 	// An Objective-C string literal i.e. @"foo".
 	Cursor_ObjCStringLiteral = C.CXCursor_ObjCStringLiteral
@@ -374,11 +375,15 @@ const (
 	Cursor_LambdaExpr     = C.CXCursor_LambdaExpr
 	// Objective-c Boolean Literal.
 	Cursor_ObjCBoolLiteralExpr = C.CXCursor_ObjCBoolLiteralExpr
-	// Represents the "self" expression in a ObjC method.
+	// Represents the "self" expression in an Objective-C method.
 	Cursor_ObjCSelfExpr = C.CXCursor_ObjCSelfExpr
-	// Represents the "self" expression in a ObjC method.
+	// OpenMP 4.0 [2.4, Array Section].
+	Cursor_OMPArraySectionExpr = C.CXCursor_OMPArraySectionExpr
+	// Represents an @available(...) check.
+	Cursor_ObjCAvailabilityCheckExpr = C.CXCursor_ObjCAvailabilityCheckExpr
+	// Represents an @available(...) check.
 	Cursor_LastExpr = C.CXCursor_LastExpr
-	// Represents the "self" expression in a ObjC method.
+	// Represents an @available(...) check.
 	Cursor_FirstStmt = C.CXCursor_FirstStmt
 	/*
 		A statement whose specific kind is not exposed via this
@@ -466,7 +471,7 @@ const (
 	// A MS inline assembly statement extension.
 	Cursor_MSAsmStmt = C.CXCursor_MSAsmStmt
 	/*
-		The null satement ";": C99 6.8.3p3.
+		The null statement ";": C99 6.8.3p3.
 
 		This cursor kind is used to describe the null statement.
 	*/
@@ -475,7 +480,81 @@ const (
 	Cursor_DeclStmt = C.CXCursor_DeclStmt
 	// OpenMP parallel directive.
 	Cursor_OMPParallelDirective = C.CXCursor_OMPParallelDirective
-	// OpenMP parallel directive.
+	// OpenMP SIMD directive.
+	Cursor_OMPSimdDirective = C.CXCursor_OMPSimdDirective
+	// OpenMP for directive.
+	Cursor_OMPForDirective = C.CXCursor_OMPForDirective
+	// OpenMP sections directive.
+	Cursor_OMPSectionsDirective = C.CXCursor_OMPSectionsDirective
+	// OpenMP section directive.
+	Cursor_OMPSectionDirective = C.CXCursor_OMPSectionDirective
+	// OpenMP single directive.
+	Cursor_OMPSingleDirective = C.CXCursor_OMPSingleDirective
+	// OpenMP parallel for directive.
+	Cursor_OMPParallelForDirective = C.CXCursor_OMPParallelForDirective
+	// OpenMP parallel sections directive.
+	Cursor_OMPParallelSectionsDirective = C.CXCursor_OMPParallelSectionsDirective
+	// OpenMP task directive.
+	Cursor_OMPTaskDirective = C.CXCursor_OMPTaskDirective
+	// OpenMP master directive.
+	Cursor_OMPMasterDirective = C.CXCursor_OMPMasterDirective
+	// OpenMP critical directive.
+	Cursor_OMPCriticalDirective = C.CXCursor_OMPCriticalDirective
+	// OpenMP taskyield directive.
+	Cursor_OMPTaskyieldDirective = C.CXCursor_OMPTaskyieldDirective
+	// OpenMP barrier directive.
+	Cursor_OMPBarrierDirective = C.CXCursor_OMPBarrierDirective
+	// OpenMP taskwait directive.
+	Cursor_OMPTaskwaitDirective = C.CXCursor_OMPTaskwaitDirective
+	// OpenMP flush directive.
+	Cursor_OMPFlushDirective = C.CXCursor_OMPFlushDirective
+	// Windows Structured Exception Handling's leave statement.
+	Cursor_SEHLeaveStmt = C.CXCursor_SEHLeaveStmt
+	// OpenMP ordered directive.
+	Cursor_OMPOrderedDirective = C.CXCursor_OMPOrderedDirective
+	// OpenMP atomic directive.
+	Cursor_OMPAtomicDirective = C.CXCursor_OMPAtomicDirective
+	// OpenMP for SIMD directive.
+	Cursor_OMPForSimdDirective = C.CXCursor_OMPForSimdDirective
+	// OpenMP parallel for SIMD directive.
+	Cursor_OMPParallelForSimdDirective = C.CXCursor_OMPParallelForSimdDirective
+	// OpenMP target directive.
+	Cursor_OMPTargetDirective = C.CXCursor_OMPTargetDirective
+	// OpenMP teams directive.
+	Cursor_OMPTeamsDirective = C.CXCursor_OMPTeamsDirective
+	// OpenMP taskgroup directive.
+	Cursor_OMPTaskgroupDirective = C.CXCursor_OMPTaskgroupDirective
+	// OpenMP cancellation point directive.
+	Cursor_OMPCancellationPointDirective = C.CXCursor_OMPCancellationPointDirective
+	// OpenMP cancel directive.
+	Cursor_OMPCancelDirective = C.CXCursor_OMPCancelDirective
+	// OpenMP target data directive.
+	Cursor_OMPTargetDataDirective = C.CXCursor_OMPTargetDataDirective
+	// OpenMP taskloop directive.
+	Cursor_OMPTaskLoopDirective = C.CXCursor_OMPTaskLoopDirective
+	// OpenMP taskloop simd directive.
+	Cursor_OMPTaskLoopSimdDirective = C.CXCursor_OMPTaskLoopSimdDirective
+	// OpenMP distribute directive.
+	Cursor_OMPDistributeDirective = C.CXCursor_OMPDistributeDirective
+	// OpenMP target enter data directive.
+	Cursor_OMPTargetEnterDataDirective = C.CXCursor_OMPTargetEnterDataDirective
+	// OpenMP target exit data directive.
+	Cursor_OMPTargetExitDataDirective = C.CXCursor_OMPTargetExitDataDirective
+	// OpenMP target parallel directive.
+	Cursor_OMPTargetParallelDirective = C.CXCursor_OMPTargetParallelDirective
+	// OpenMP target parallel for directive.
+	Cursor_OMPTargetParallelForDirective = C.CXCursor_OMPTargetParallelForDirective
+	// OpenMP target update directive.
+	Cursor_OMPTargetUpdateDirective = C.CXCursor_OMPTargetUpdateDirective
+	// OpenMP distribute parallel for directive.
+	Cursor_OMPDistributeParallelForDirective = C.CXCursor_OMPDistributeParallelForDirective
+	// OpenMP distribute parallel for simd directive.
+	Cursor_OMPDistributeParallelForSimdDirective = C.CXCursor_OMPDistributeParallelForSimdDirective
+	// OpenMP distribute simd directive.
+	Cursor_OMPDistributeSimdDirective = C.CXCursor_OMPDistributeSimdDirective
+	// OpenMP target parallel for simd directive.
+	Cursor_OMPTargetParallelForSimdDirective = C.CXCursor_OMPTargetParallelForSimdDirective
+	// OpenMP target parallel for simd directive.
 	Cursor_LastStmt = C.CXCursor_LastStmt
 	/*
 		Cursor that represents the translation unit itself.
@@ -510,6 +589,28 @@ const (
 	// An attribute whose specific kind is not exposed via this interface.
 	Cursor_PackedAttr = C.CXCursor_PackedAttr
 	// An attribute whose specific kind is not exposed via this interface.
+	Cursor_PureAttr = C.CXCursor_PureAttr
+	// An attribute whose specific kind is not exposed via this interface.
+	Cursor_ConstAttr = C.CXCursor_ConstAttr
+	// An attribute whose specific kind is not exposed via this interface.
+	Cursor_NoDuplicateAttr = C.CXCursor_NoDuplicateAttr
+	// An attribute whose specific kind is not exposed via this interface.
+	Cursor_CUDAConstantAttr = C.CXCursor_CUDAConstantAttr
+	// An attribute whose specific kind is not exposed via this interface.
+	Cursor_CUDADeviceAttr = C.CXCursor_CUDADeviceAttr
+	// An attribute whose specific kind is not exposed via this interface.
+	Cursor_CUDAGlobalAttr = C.CXCursor_CUDAGlobalAttr
+	// An attribute whose specific kind is not exposed via this interface.
+	Cursor_CUDAHostAttr = C.CXCursor_CUDAHostAttr
+	// An attribute whose specific kind is not exposed via this interface.
+	Cursor_CUDASharedAttr = C.CXCursor_CUDASharedAttr
+	// An attribute whose specific kind is not exposed via this interface.
+	Cursor_VisibilityAttr = C.CXCursor_VisibilityAttr
+	// An attribute whose specific kind is not exposed via this interface.
+	Cursor_DLLExport = C.CXCursor_DLLExport
+	// An attribute whose specific kind is not exposed via this interface.
+	Cursor_DLLImport = C.CXCursor_DLLImport
+	// An attribute whose specific kind is not exposed via this interface.
 	Cursor_LastAttr = C.CXCursor_LastAttr
 	// An attribute whose specific kind is not exposed via this interface.
 	Cursor_PreprocessingDirective = C.CXCursor_PreprocessingDirective
@@ -528,86 +629,426 @@ const (
 	// A module import declaration.
 	Cursor_ModuleImportDecl = C.CXCursor_ModuleImportDecl
 	// A module import declaration.
+	Cursor_TypeAliasTemplateDecl = C.CXCursor_TypeAliasTemplateDecl
+	// A static_assert or _Static_assert node
+	Cursor_StaticAssert = C.CXCursor_StaticAssert
+	// A static_assert or _Static_assert node
 	Cursor_FirstExtraDecl = C.CXCursor_FirstExtraDecl
-	// A module import declaration.
+	// A static_assert or _Static_assert node
 	Cursor_LastExtraDecl = C.CXCursor_LastExtraDecl
+	// A code completion overload candidate.
+	Cursor_OverloadCandidate = C.CXCursor_OverloadCandidate
 )
 
-// Determine whether the given cursor kind represents a declaration.
-func (ck CursorKind) IsDeclaration() bool {
-	o := C.clang_isDeclaration(C.enum_CXCursorKind(ck))
-
-	return o != C.uint(0)
-}
-
-/*
-	Determine whether the given cursor kind represents a simple
-	reference.
-
-	Note that other kinds of cursors (such as expressions) can also refer to
-	other cursors. Use clang_getCursorReferenced() to determine whether a
-	particular cursor refers to another entity.
-*/
-func (ck CursorKind) IsReference() bool {
-	o := C.clang_isReference(C.enum_CXCursorKind(ck))
-
-	return o != C.uint(0)
-}
-
-// Determine whether the given cursor kind represents an expression.
-func (ck CursorKind) IsExpression() bool {
-	o := C.clang_isExpression(C.enum_CXCursorKind(ck))
-
-	return o != C.uint(0)
-}
-
-// Determine whether the given cursor kind represents a statement.
-func (ck CursorKind) IsStatement() bool {
-	o := C.clang_isStatement(C.enum_CXCursorKind(ck))
-
-	return o != C.uint(0)
-}
-
-// Determine whether the given cursor kind represents an attribute.
-func (ck CursorKind) IsAttribute() bool {
-	o := C.clang_isAttribute(C.enum_CXCursorKind(ck))
-
-	return o != C.uint(0)
-}
-
-// Determine whether the given cursor kind represents an invalid cursor.
-func (ck CursorKind) IsInvalid() bool {
-	o := C.clang_isInvalid(C.enum_CXCursorKind(ck))
-
-	return o != C.uint(0)
-}
-
-// Determine whether the given cursor kind represents a translation unit.
-func (ck CursorKind) IsTranslationUnit() bool {
-	o := C.clang_isTranslationUnit(C.enum_CXCursorKind(ck))
-
-	return o != C.uint(0)
-}
-
-// * Determine whether the given cursor represents a preprocessing element, such as a preprocessor directive or macro instantiation.
-func (ck CursorKind) IsPreprocessing() bool {
-	o := C.clang_isPreprocessing(C.enum_CXCursorKind(ck))
-
-	return o != C.uint(0)
-}
-
-// * Determine whether the given cursor represents a currently unexposed piece of the AST (e.g., CXCursor_UnexposedStmt).
-func (ck CursorKind) IsUnexposed() bool {
-	o := C.clang_isUnexposed(C.enum_CXCursorKind(ck))
-
-	return o != C.uint(0)
-}
-
 func (ck CursorKind) Spelling() string {
-	o := cxstring{C.clang_getCursorKindSpelling(C.enum_CXCursorKind(ck))}
-	defer o.Dispose()
+	switch ck {
+	case Cursor_UnexposedDecl:
+		return "Cursor=UnexposedDecl, FirstDecl"
+	case Cursor_StructDecl:
+		return "Cursor=StructDecl"
+	case Cursor_UnionDecl:
+		return "Cursor=UnionDecl"
+	case Cursor_ClassDecl:
+		return "Cursor=ClassDecl"
+	case Cursor_EnumDecl:
+		return "Cursor=EnumDecl"
+	case Cursor_FieldDecl:
+		return "Cursor=FieldDecl"
+	case Cursor_EnumConstantDecl:
+		return "Cursor=EnumConstantDecl"
+	case Cursor_FunctionDecl:
+		return "Cursor=FunctionDecl"
+	case Cursor_VarDecl:
+		return "Cursor=VarDecl"
+	case Cursor_ParmDecl:
+		return "Cursor=ParmDecl"
+	case Cursor_ObjCInterfaceDecl:
+		return "Cursor=ObjCInterfaceDecl"
+	case Cursor_ObjCCategoryDecl:
+		return "Cursor=ObjCCategoryDecl"
+	case Cursor_ObjCProtocolDecl:
+		return "Cursor=ObjCProtocolDecl"
+	case Cursor_ObjCPropertyDecl:
+		return "Cursor=ObjCPropertyDecl"
+	case Cursor_ObjCIvarDecl:
+		return "Cursor=ObjCIvarDecl"
+	case Cursor_ObjCInstanceMethodDecl:
+		return "Cursor=ObjCInstanceMethodDecl"
+	case Cursor_ObjCClassMethodDecl:
+		return "Cursor=ObjCClassMethodDecl"
+	case Cursor_ObjCImplementationDecl:
+		return "Cursor=ObjCImplementationDecl"
+	case Cursor_ObjCCategoryImplDecl:
+		return "Cursor=ObjCCategoryImplDecl"
+	case Cursor_TypedefDecl:
+		return "Cursor=TypedefDecl"
+	case Cursor_CXXMethod:
+		return "Cursor=CXXMethod"
+	case Cursor_Namespace:
+		return "Cursor=Namespace"
+	case Cursor_LinkageSpec:
+		return "Cursor=LinkageSpec"
+	case Cursor_Constructor:
+		return "Cursor=Constructor"
+	case Cursor_Destructor:
+		return "Cursor=Destructor"
+	case Cursor_ConversionFunction:
+		return "Cursor=ConversionFunction"
+	case Cursor_TemplateTypeParameter:
+		return "Cursor=TemplateTypeParameter"
+	case Cursor_NonTypeTemplateParameter:
+		return "Cursor=NonTypeTemplateParameter"
+	case Cursor_TemplateTemplateParameter:
+		return "Cursor=TemplateTemplateParameter"
+	case Cursor_FunctionTemplate:
+		return "Cursor=FunctionTemplate"
+	case Cursor_ClassTemplate:
+		return "Cursor=ClassTemplate"
+	case Cursor_ClassTemplatePartialSpecialization:
+		return "Cursor=ClassTemplatePartialSpecialization"
+	case Cursor_NamespaceAlias:
+		return "Cursor=NamespaceAlias"
+	case Cursor_UsingDirective:
+		return "Cursor=UsingDirective"
+	case Cursor_UsingDeclaration:
+		return "Cursor=UsingDeclaration"
+	case Cursor_TypeAliasDecl:
+		return "Cursor=TypeAliasDecl"
+	case Cursor_ObjCSynthesizeDecl:
+		return "Cursor=ObjCSynthesizeDecl"
+	case Cursor_ObjCDynamicDecl:
+		return "Cursor=ObjCDynamicDecl"
+	case Cursor_CXXAccessSpecifier:
+		return "Cursor=CXXAccessSpecifier, LastDecl"
+	case Cursor_FirstRef:
+		return "Cursor=FirstRef, ObjCSuperClassRef"
+	case Cursor_ObjCProtocolRef:
+		return "Cursor=ObjCProtocolRef"
+	case Cursor_ObjCClassRef:
+		return "Cursor=ObjCClassRef"
+	case Cursor_TypeRef:
+		return "Cursor=TypeRef"
+	case Cursor_CXXBaseSpecifier:
+		return "Cursor=CXXBaseSpecifier"
+	case Cursor_TemplateRef:
+		return "Cursor=TemplateRef"
+	case Cursor_NamespaceRef:
+		return "Cursor=NamespaceRef"
+	case Cursor_MemberRef:
+		return "Cursor=MemberRef"
+	case Cursor_LabelRef:
+		return "Cursor=LabelRef"
+	case Cursor_OverloadedDeclRef:
+		return "Cursor=OverloadedDeclRef"
+	case Cursor_VariableRef:
+		return "Cursor=VariableRef, LastRef"
+	case Cursor_FirstInvalid:
+		return "Cursor=FirstInvalid, InvalidFile"
+	case Cursor_NoDeclFound:
+		return "Cursor=NoDeclFound"
+	case Cursor_NotImplemented:
+		return "Cursor=NotImplemented"
+	case Cursor_InvalidCode:
+		return "Cursor=InvalidCode, LastInvalid"
+	case Cursor_FirstExpr:
+		return "Cursor=FirstExpr, UnexposedExpr"
+	case Cursor_DeclRefExpr:
+		return "Cursor=DeclRefExpr"
+	case Cursor_MemberRefExpr:
+		return "Cursor=MemberRefExpr"
+	case Cursor_CallExpr:
+		return "Cursor=CallExpr"
+	case Cursor_ObjCMessageExpr:
+		return "Cursor=ObjCMessageExpr"
+	case Cursor_BlockExpr:
+		return "Cursor=BlockExpr"
+	case Cursor_IntegerLiteral:
+		return "Cursor=IntegerLiteral"
+	case Cursor_FloatingLiteral:
+		return "Cursor=FloatingLiteral"
+	case Cursor_ImaginaryLiteral:
+		return "Cursor=ImaginaryLiteral"
+	case Cursor_StringLiteral:
+		return "Cursor=StringLiteral"
+	case Cursor_CharacterLiteral:
+		return "Cursor=CharacterLiteral"
+	case Cursor_ParenExpr:
+		return "Cursor=ParenExpr"
+	case Cursor_UnaryOperator:
+		return "Cursor=UnaryOperator"
+	case Cursor_ArraySubscriptExpr:
+		return "Cursor=ArraySubscriptExpr"
+	case Cursor_BinaryOperator:
+		return "Cursor=BinaryOperator"
+	case Cursor_CompoundAssignOperator:
+		return "Cursor=CompoundAssignOperator"
+	case Cursor_ConditionalOperator:
+		return "Cursor=ConditionalOperator"
+	case Cursor_CStyleCastExpr:
+		return "Cursor=CStyleCastExpr"
+	case Cursor_CompoundLiteralExpr:
+		return "Cursor=CompoundLiteralExpr"
+	case Cursor_InitListExpr:
+		return "Cursor=InitListExpr"
+	case Cursor_AddrLabelExpr:
+		return "Cursor=AddrLabelExpr"
+	case Cursor_StmtExpr:
+		return "Cursor=StmtExpr"
+	case Cursor_GenericSelectionExpr:
+		return "Cursor=GenericSelectionExpr"
+	case Cursor_GNUNullExpr:
+		return "Cursor=GNUNullExpr"
+	case Cursor_CXXStaticCastExpr:
+		return "Cursor=CXXStaticCastExpr"
+	case Cursor_CXXDynamicCastExpr:
+		return "Cursor=CXXDynamicCastExpr"
+	case Cursor_CXXReinterpretCastExpr:
+		return "Cursor=CXXReinterpretCastExpr"
+	case Cursor_CXXConstCastExpr:
+		return "Cursor=CXXConstCastExpr"
+	case Cursor_CXXFunctionalCastExpr:
+		return "Cursor=CXXFunctionalCastExpr"
+	case Cursor_CXXTypeidExpr:
+		return "Cursor=CXXTypeidExpr"
+	case Cursor_CXXBoolLiteralExpr:
+		return "Cursor=CXXBoolLiteralExpr"
+	case Cursor_CXXNullPtrLiteralExpr:
+		return "Cursor=CXXNullPtrLiteralExpr"
+	case Cursor_CXXThisExpr:
+		return "Cursor=CXXThisExpr"
+	case Cursor_CXXThrowExpr:
+		return "Cursor=CXXThrowExpr"
+	case Cursor_CXXNewExpr:
+		return "Cursor=CXXNewExpr"
+	case Cursor_CXXDeleteExpr:
+		return "Cursor=CXXDeleteExpr"
+	case Cursor_UnaryExpr:
+		return "Cursor=UnaryExpr"
+	case Cursor_ObjCStringLiteral:
+		return "Cursor=ObjCStringLiteral"
+	case Cursor_ObjCEncodeExpr:
+		return "Cursor=ObjCEncodeExpr"
+	case Cursor_ObjCSelectorExpr:
+		return "Cursor=ObjCSelectorExpr"
+	case Cursor_ObjCProtocolExpr:
+		return "Cursor=ObjCProtocolExpr"
+	case Cursor_ObjCBridgedCastExpr:
+		return "Cursor=ObjCBridgedCastExpr"
+	case Cursor_PackExpansionExpr:
+		return "Cursor=PackExpansionExpr"
+	case Cursor_SizeOfPackExpr:
+		return "Cursor=SizeOfPackExpr"
+	case Cursor_LambdaExpr:
+		return "Cursor=LambdaExpr"
+	case Cursor_ObjCBoolLiteralExpr:
+		return "Cursor=ObjCBoolLiteralExpr"
+	case Cursor_ObjCSelfExpr:
+		return "Cursor=ObjCSelfExpr"
+	case Cursor_OMPArraySectionExpr:
+		return "Cursor=OMPArraySectionExpr"
+	case Cursor_ObjCAvailabilityCheckExpr:
+		return "Cursor=ObjCAvailabilityCheckExpr, LastExpr"
+	case Cursor_FirstStmt:
+		return "Cursor=FirstStmt, UnexposedStmt"
+	case Cursor_LabelStmt:
+		return "Cursor=LabelStmt"
+	case Cursor_CompoundStmt:
+		return "Cursor=CompoundStmt"
+	case Cursor_CaseStmt:
+		return "Cursor=CaseStmt"
+	case Cursor_DefaultStmt:
+		return "Cursor=DefaultStmt"
+	case Cursor_IfStmt:
+		return "Cursor=IfStmt"
+	case Cursor_SwitchStmt:
+		return "Cursor=SwitchStmt"
+	case Cursor_WhileStmt:
+		return "Cursor=WhileStmt"
+	case Cursor_DoStmt:
+		return "Cursor=DoStmt"
+	case Cursor_ForStmt:
+		return "Cursor=ForStmt"
+	case Cursor_GotoStmt:
+		return "Cursor=GotoStmt"
+	case Cursor_IndirectGotoStmt:
+		return "Cursor=IndirectGotoStmt"
+	case Cursor_ContinueStmt:
+		return "Cursor=ContinueStmt"
+	case Cursor_BreakStmt:
+		return "Cursor=BreakStmt"
+	case Cursor_ReturnStmt:
+		return "Cursor=ReturnStmt"
+	case Cursor_GCCAsmStmt:
+		return "Cursor=GCCAsmStmt, AsmStmt"
+	case Cursor_ObjCAtTryStmt:
+		return "Cursor=ObjCAtTryStmt"
+	case Cursor_ObjCAtCatchStmt:
+		return "Cursor=ObjCAtCatchStmt"
+	case Cursor_ObjCAtFinallyStmt:
+		return "Cursor=ObjCAtFinallyStmt"
+	case Cursor_ObjCAtThrowStmt:
+		return "Cursor=ObjCAtThrowStmt"
+	case Cursor_ObjCAtSynchronizedStmt:
+		return "Cursor=ObjCAtSynchronizedStmt"
+	case Cursor_ObjCAutoreleasePoolStmt:
+		return "Cursor=ObjCAutoreleasePoolStmt"
+	case Cursor_ObjCForCollectionStmt:
+		return "Cursor=ObjCForCollectionStmt"
+	case Cursor_CXXCatchStmt:
+		return "Cursor=CXXCatchStmt"
+	case Cursor_CXXTryStmt:
+		return "Cursor=CXXTryStmt"
+	case Cursor_CXXForRangeStmt:
+		return "Cursor=CXXForRangeStmt"
+	case Cursor_SEHTryStmt:
+		return "Cursor=SEHTryStmt"
+	case Cursor_SEHExceptStmt:
+		return "Cursor=SEHExceptStmt"
+	case Cursor_SEHFinallyStmt:
+		return "Cursor=SEHFinallyStmt"
+	case Cursor_MSAsmStmt:
+		return "Cursor=MSAsmStmt"
+	case Cursor_NullStmt:
+		return "Cursor=NullStmt"
+	case Cursor_DeclStmt:
+		return "Cursor=DeclStmt"
+	case Cursor_OMPParallelDirective:
+		return "Cursor=OMPParallelDirective"
+	case Cursor_OMPSimdDirective:
+		return "Cursor=OMPSimdDirective"
+	case Cursor_OMPForDirective:
+		return "Cursor=OMPForDirective"
+	case Cursor_OMPSectionsDirective:
+		return "Cursor=OMPSectionsDirective"
+	case Cursor_OMPSectionDirective:
+		return "Cursor=OMPSectionDirective"
+	case Cursor_OMPSingleDirective:
+		return "Cursor=OMPSingleDirective"
+	case Cursor_OMPParallelForDirective:
+		return "Cursor=OMPParallelForDirective"
+	case Cursor_OMPParallelSectionsDirective:
+		return "Cursor=OMPParallelSectionsDirective"
+	case Cursor_OMPTaskDirective:
+		return "Cursor=OMPTaskDirective"
+	case Cursor_OMPMasterDirective:
+		return "Cursor=OMPMasterDirective"
+	case Cursor_OMPCriticalDirective:
+		return "Cursor=OMPCriticalDirective"
+	case Cursor_OMPTaskyieldDirective:
+		return "Cursor=OMPTaskyieldDirective"
+	case Cursor_OMPBarrierDirective:
+		return "Cursor=OMPBarrierDirective"
+	case Cursor_OMPTaskwaitDirective:
+		return "Cursor=OMPTaskwaitDirective"
+	case Cursor_OMPFlushDirective:
+		return "Cursor=OMPFlushDirective"
+	case Cursor_SEHLeaveStmt:
+		return "Cursor=SEHLeaveStmt"
+	case Cursor_OMPOrderedDirective:
+		return "Cursor=OMPOrderedDirective"
+	case Cursor_OMPAtomicDirective:
+		return "Cursor=OMPAtomicDirective"
+	case Cursor_OMPForSimdDirective:
+		return "Cursor=OMPForSimdDirective"
+	case Cursor_OMPParallelForSimdDirective:
+		return "Cursor=OMPParallelForSimdDirective"
+	case Cursor_OMPTargetDirective:
+		return "Cursor=OMPTargetDirective"
+	case Cursor_OMPTeamsDirective:
+		return "Cursor=OMPTeamsDirective"
+	case Cursor_OMPTaskgroupDirective:
+		return "Cursor=OMPTaskgroupDirective"
+	case Cursor_OMPCancellationPointDirective:
+		return "Cursor=OMPCancellationPointDirective"
+	case Cursor_OMPCancelDirective:
+		return "Cursor=OMPCancelDirective"
+	case Cursor_OMPTargetDataDirective:
+		return "Cursor=OMPTargetDataDirective"
+	case Cursor_OMPTaskLoopDirective:
+		return "Cursor=OMPTaskLoopDirective"
+	case Cursor_OMPTaskLoopSimdDirective:
+		return "Cursor=OMPTaskLoopSimdDirective"
+	case Cursor_OMPDistributeDirective:
+		return "Cursor=OMPDistributeDirective"
+	case Cursor_OMPTargetEnterDataDirective:
+		return "Cursor=OMPTargetEnterDataDirective"
+	case Cursor_OMPTargetExitDataDirective:
+		return "Cursor=OMPTargetExitDataDirective"
+	case Cursor_OMPTargetParallelDirective:
+		return "Cursor=OMPTargetParallelDirective"
+	case Cursor_OMPTargetParallelForDirective:
+		return "Cursor=OMPTargetParallelForDirective"
+	case Cursor_OMPTargetUpdateDirective:
+		return "Cursor=OMPTargetUpdateDirective"
+	case Cursor_OMPDistributeParallelForDirective:
+		return "Cursor=OMPDistributeParallelForDirective"
+	case Cursor_OMPDistributeParallelForSimdDirective:
+		return "Cursor=OMPDistributeParallelForSimdDirective"
+	case Cursor_OMPDistributeSimdDirective:
+		return "Cursor=OMPDistributeSimdDirective"
+	case Cursor_OMPTargetParallelForSimdDirective:
+		return "Cursor=OMPTargetParallelForSimdDirective, LastStmt"
+	case Cursor_TranslationUnit:
+		return "Cursor=TranslationUnit"
+	case Cursor_FirstAttr:
+		return "Cursor=FirstAttr, UnexposedAttr"
+	case Cursor_IBActionAttr:
+		return "Cursor=IBActionAttr"
+	case Cursor_IBOutletAttr:
+		return "Cursor=IBOutletAttr"
+	case Cursor_IBOutletCollectionAttr:
+		return "Cursor=IBOutletCollectionAttr"
+	case Cursor_CXXFinalAttr:
+		return "Cursor=CXXFinalAttr"
+	case Cursor_CXXOverrideAttr:
+		return "Cursor=CXXOverrideAttr"
+	case Cursor_AnnotateAttr:
+		return "Cursor=AnnotateAttr"
+	case Cursor_AsmLabelAttr:
+		return "Cursor=AsmLabelAttr"
+	case Cursor_PackedAttr:
+		return "Cursor=PackedAttr"
+	case Cursor_PureAttr:
+		return "Cursor=PureAttr"
+	case Cursor_ConstAttr:
+		return "Cursor=ConstAttr"
+	case Cursor_NoDuplicateAttr:
+		return "Cursor=NoDuplicateAttr"
+	case Cursor_CUDAConstantAttr:
+		return "Cursor=CUDAConstantAttr"
+	case Cursor_CUDADeviceAttr:
+		return "Cursor=CUDADeviceAttr"
+	case Cursor_CUDAGlobalAttr:
+		return "Cursor=CUDAGlobalAttr"
+	case Cursor_CUDAHostAttr:
+		return "Cursor=CUDAHostAttr"
+	case Cursor_CUDASharedAttr:
+		return "Cursor=CUDASharedAttr"
+	case Cursor_VisibilityAttr:
+		return "Cursor=VisibilityAttr"
+	case Cursor_DLLExport:
+		return "Cursor=DLLExport"
+	case Cursor_DLLImport:
+		return "Cursor=DLLImport, LastAttr"
+	case Cursor_PreprocessingDirective:
+		return "Cursor=PreprocessingDirective, FirstPreprocessing"
+	case Cursor_MacroDefinition:
+		return "Cursor=MacroDefinition"
+	case Cursor_MacroExpansion:
+		return "Cursor=MacroExpansion, MacroInstantiation"
+	case Cursor_InclusionDirective:
+		return "Cursor=InclusionDirective, LastPreprocessing"
+	case Cursor_ModuleImportDecl:
+		return "Cursor=ModuleImportDecl, FirstExtraDecl"
+	case Cursor_TypeAliasTemplateDecl:
+		return "Cursor=TypeAliasTemplateDecl"
+	case Cursor_StaticAssert:
+		return "Cursor=StaticAssert, LastExtraDecl"
+	case Cursor_OverloadCandidate:
+		return "Cursor=OverloadCandidate"
+	}
 
-	return o.String()
+	return fmt.Sprintf("CursorKind unkown %d", int(ck))
 }
 
 func (ck CursorKind) String() string {
